@@ -224,4 +224,52 @@ const PORTFOLIO = {
     },
   ],
 
+  education: [
+    {
+      degree:      "Bachelor of Engineering",
+      field:       "Computer Science",
+      institution: "University of Mumbai",
+      period:      "2014 – 2018",
+      grade:       null,
+    },
+  ],
+
+  certifications: [
+    {
+      name:   "Microsoft Azure Fundamentals",
+      issuer: "Microsoft",
+      code:   "AZ-900",
+      year:   "2023",
+      icon:   "☁️",
+    },
+    {
+      name:   "Google Data Analytics",
+      issuer: "Google / Coursera",
+      code:   null,
+      year:   "2022",
+      icon:   "📊",
+    },
+    {
+      name:   "Machine Learning Specialization",
+      issuer: "DeepLearning.AI / Coursera",
+      code:   null,
+      year:   "2021",
+      icon:   "🤖",
+    },
+    {
+      name:   "SQL for Data Science",
+      issuer: "UC Davis / Coursera",
+      code:   null,
+      year:   "2021",
+      icon:   "🗄️",
+    },
+    {
+      name:   "Python for Everybody",
+      issuer: "University of Michigan / Coursera",
+      code:   null,
+      year:   "2020",
+      icon:   "🐍",
+    },
+  ],
+
 };

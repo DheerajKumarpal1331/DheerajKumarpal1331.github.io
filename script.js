@@ -260,23 +260,99 @@ function renderExperience() {
   const tl = $('#timeline');
   if (!tl) return;
   tl.innerHTML = PORTFOLIO.experience.map((exp, i) => `
-    <div class="tl-item${exp.current ? ' current' : ''} reveal delay-${Math.min(i + 2, 5)}">
+    <div class="tl-item${exp.current ? ' current' : ''}${i === 0 ? ' open' : ''} reveal delay-${Math.min(i + 2, 5)}">
       <div class="tl-dot"></div>
       <div class="tl-card">
-        <div class="tl-header">
-          <span class="tl-role">${exp.role}</span>
-          <span class="tl-period">${exp.period}</span>
+        <button class="tl-toggle" aria-expanded="${i === 0}" aria-controls="tl-body-${i}">
+          <div class="tl-header">
+            <div class="tl-header-left">
+              <span class="tl-role">${exp.role}</span>
+              <div class="tl-meta">
+                <span class="tl-company">${exp.company}</span>
+                ${exp.current ? '<span class="current-tag">● Current</span>' : ''}
+              </div>
+            </div>
+            <div class="tl-header-right">
+              <span class="tl-period">${exp.period}</span>
+              <span class="tl-chevron">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+          </div>
+        </button>
+        <div class="tl-body" id="tl-body-${i}">
+          <ul class="tl-bullets">
+            ${exp.achievements.map(a => `<li class="tl-bullet"><span>${a}</span></li>`).join('')}
+          </ul>
         </div>
-        <div class="tl-meta">
-          <span class="tl-company">${exp.company}</span>
-          ${exp.current ? '<span class="current-tag">● Current</span>' : ''}
-        </div>
-        <ul class="tl-bullets">
-          ${exp.achievements.map(a => `<li class="tl-bullet"><span>${a}</span></li>`).join('')}
-        </ul>
       </div>
     </div>
   `).join('');
+
+  // Accordion click handler
+  tl.querySelectorAll('.tl-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.tl-item');
+      const isOpen = item.classList.contains('open');
+      // Close all
+      tl.querySelectorAll('.tl-item').forEach(el => {
+        el.classList.remove('open');
+        el.querySelector('.tl-toggle').setAttribute('aria-expanded', 'false');
+      });
+      // Open clicked (toggle)
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+}
+
+function renderEducation() {
+  const grid = $('#edu-grid');
+  if (!grid) return;
+
+  const { education = [], certifications = [] } = PORTFOLIO;
+
+  const degreeHTML = education.map(e => `
+    <div class="edu-card reveal">
+      <div class="edu-card-icon">🎓</div>
+      <div class="edu-card-body">
+        <div class="edu-card-title">${e.degree}</div>
+        <div class="edu-card-sub">${e.field}</div>
+        <div class="edu-card-meta">
+          <span>${e.institution}</span>
+          <span class="edu-dot">·</span>
+          <span>${e.period}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const certHTML = certifications.map((c, i) => `
+    <div class="edu-card reveal delay-${Math.min(i + 1, 4)}">
+      <div class="edu-card-icon">${c.icon}</div>
+      <div class="edu-card-body">
+        <div class="edu-card-title">${c.name}${c.code ? ` <span class="cert-code">${c.code}</span>` : ''}</div>
+        <div class="edu-card-meta">
+          <span>${c.issuer}</span>
+          <span class="edu-dot">·</span>
+          <span>${c.year}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  grid.innerHTML = `
+    <div class="edu-section">
+      <h3 class="edu-section-label">Degree</h3>
+      <div class="edu-cards">${degreeHTML}</div>
+    </div>
+    <div class="edu-section">
+      <h3 class="edu-section-label">Certifications</h3>
+      <div class="edu-cards">${certHTML}</div>
+    </div>
+  `;
 }
 
 // ── Render: Footer year ───────────────────────────────────────
@@ -471,6 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSkills();
   renderProjects();
   renderExperience();
+  renderEducation();
   renderFooter();
 
   // Lucide icons

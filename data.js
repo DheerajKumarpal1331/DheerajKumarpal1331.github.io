@@ -226,10 +226,17 @@ const PORTFOLIO = {
 
   education: [
     {
-      degree:      "Bachelor of Engineering",
+      degree:      "B.Sc.",
       field:       "Computer Science",
       institution: "University of Mumbai",
-      period:      "2014 – 2018",
+      period:      "2014 – 2017",
+      grade:       null,
+    },
+    {
+      degree:      "M.Sc.",
+      field:       "Data Science & AI",
+      institution: "University of Mumbai",
+      period:      "2021 – 2023",
       grade:       null,
     },
   ],

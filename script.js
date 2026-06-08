@@ -329,28 +329,21 @@ function renderEducation() {
     </div>
   `).join('');
 
-  const certHTML = certifications.map((c, i) => `
-    <div class="edu-card reveal delay-${Math.min(i + 1, 4)}">
-      <div class="edu-card-icon">${c.icon}</div>
-      <div class="edu-card-body">
-        <div class="edu-card-title">${c.name}${c.code ? ` <span class="cert-code">${c.code}</span>` : ''}</div>
-        <div class="edu-card-meta">
-          <span>${c.issuer}</span>
-          <span class="edu-dot">·</span>
-          <span>${c.year}</span>
-        </div>
-      </div>
+  const certHTML = certifications.map(c => `
+    <div class="cert-chip">
+      <span class="cert-chip-icon">${c.icon}</span>
+      <span class="cert-chip-name">${c.name}${c.code ? ` (${c.code})` : ''}</span>
     </div>
   `).join('');
 
   grid.innerHTML = `
-    <div class="edu-section">
-      <h3 class="edu-section-label">Degree</h3>
+    <div class="edu-section reveal">
+      <h3 class="edu-section-label">Degrees</h3>
       <div class="edu-cards">${degreeHTML}</div>
     </div>
-    <div class="edu-section">
+    <div class="edu-section reveal delay-2">
       <h3 class="edu-section-label">Certifications</h3>
-      <div class="edu-cards">${certHTML}</div>
+      <div class="cert-chips">${certHTML}</div>
     </div>
   `;
 }

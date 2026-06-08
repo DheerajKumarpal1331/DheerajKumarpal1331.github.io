@@ -765,10 +765,10 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .edu-dot { opacity: 0.4; }
 
-/* Certification chips — 4 columns */
+/* Certification chips — 3 columns (2 × 3 for 6 certs) */
 .cert-chips {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 .cert-chip {
@@ -904,7 +904,7 @@ input.error, textarea.error, select.error { border-color: #EF4444; box-shadow: 0
   .tl-bullets { padding: 0 20px 20px; padding-top: 16px; }
   .section-title { font-size: clamp(28px, 6vw, 42px); }
   .quote-stripe { padding: 28px 0; }
-  /* Education: stack degree cards and 2-col cert chips on tablet/mobile */
+  /* Education: stack degree cards, cert chips 2-col on mobile */
   .edu-cards { grid-template-columns: 1fr; }
   .cert-chips { grid-template-columns: repeat(2, 1fr); }
 }

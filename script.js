@@ -296,11 +296,11 @@ function initContactForm() {
   form.addEventListener('submit', async e => {
     e.preventDefault();
     let valid = true;
-    form.querySelectorAll('input, textarea').forEach(field => {
+    form.querySelectorAll('input[required], textarea[required], select[required]').forEach(field => {
       field.classList.remove('error');
-      if (!field.value.trim() || (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value))) {
-        field.classList.add('error'); valid = false;
-      }
+      const empty = !field.value.trim();
+      const badEmail = field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value);
+      if (empty || badEmail) { field.classList.add('error'); valid = false; }
     });
     if (!valid) return;
 
@@ -311,6 +311,8 @@ function initContactForm() {
     const data = {
       name:    document.getElementById('cf-name')?.value,
       email:   document.getElementById('cf-email')?.value,
+      type:    document.getElementById('cf-type')?.value,
+      company: document.getElementById('cf-company')?.value || 'Not provided',
       message: document.getElementById('cf-msg')?.value,
     };
 
@@ -338,8 +340,9 @@ function initContactForm() {
   });
 
   // Clear error on input
-  form.querySelectorAll('input, textarea').forEach(f => {
+  form.querySelectorAll('input, textarea, select').forEach(f => {
     f.addEventListener('input', () => f.classList.remove('error'));
+    f.addEventListener('change', () => f.classList.remove('error'));
   });
 }
 

@@ -301,10 +301,20 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   }
   .hero-char {
     order: 2;
+    position: relative;
+    width: auto !important;
+    height: clamp(180px, 52vw, 280px);
     align-self: center;
-    height: clamp(160px, 48vw, 260px);
+    justify-self: center;
+    margin: 0 auto;
     padding: 0;
     animation: char-float-mobile 6s ease-in-out infinite;
+  }
+  .hero-char img {
+    height: 100%;
+    width: auto;
+    display: block;
+    margin: 0 auto;
   }
   .hero-name-wrap    { order: 1; }
   .hero-marquee      { order: 3; }

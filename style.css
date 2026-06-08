@@ -261,8 +261,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   z-index: 3;
   align-self: center;
   justify-self: center;
+  min-width: 0;
   height: clamp(180px, 26vw, 370px);
-  width: auto;
+  width: 100%;
   animation: char-float 6s ease-in-out infinite;
   padding: 0 clamp(8px, 2vw, 24px);
 }
@@ -346,6 +347,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   display: flex; flex-direction: column; justify-content: center;
   padding: 12px clamp(12px, 2vw, 32px) 12px clamp(24px, 7vw, 96px);
   position: relative; z-index: 2; min-height: 0;
+  overflow: hidden; min-width: 0;
 }
 .hero-name {
   font-family: 'Syne', system-ui, sans-serif;
@@ -354,12 +356,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .hn-1 {
   display: block;
-  font-size: clamp(44px, 5.8vw, 104px);
+  font-size: clamp(44px, 5.0vw, 96px);
   color: var(--text);
 }
 .hn-2 {
   display: block;
-  font-size: clamp(44px, 5.8vw, 104px);
+  font-size: clamp(44px, 5.0vw, 96px);
   background: linear-gradient(120deg, var(--accent) 0%, #6EA8FE 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -228,7 +228,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 /* ── ═══ HERO ═══ ─────────────────────────────────────────── */
 #hero {
   min-height: 100svh;
-  display: flex; flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr clamp(180px, 28vw, 380px);
+  grid-template-rows: 1fr auto auto auto;
   padding-top: 68px;
   position: relative; overflow: hidden;
   background:
@@ -251,19 +253,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 
 /* ── ASTRONAUT CHARACTER ── */
+/* Grid child: column 2, row 1 — can NEVER overlap the name */
 .hero-char {
-  position: absolute;
-  right: clamp(24px, 5vw, 80px);
-  top: 44%; transform: translateY(-52%);
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
   z-index: 3;
-  height: clamp(200px, 26vw, 380px);
+  align-self: center;
+  justify-self: center;
+  height: clamp(180px, 26vw, 370px);
   width: auto;
   animation: char-float 6s ease-in-out infinite;
+  padding: 0 clamp(8px, 2vw, 24px);
 }
 .hero-char img {
   height: 100%; width: auto;
   display: block;
-  /* Radial mask: fades out white corners, keeps the circular glow + astronaut */
   -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 48%,
     black 0%, black 72%, rgba(0,0,0,0.6) 84%, transparent 100%);
   mask-image: radial-gradient(ellipse 50% 50% at 50% 48%,
@@ -271,40 +276,39 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   filter: drop-shadow(0 0 40px rgba(147, 93, 255, 0.45))
           drop-shadow(0 24px 56px rgba(20, 71, 230, 0.30));
 }
-/* In light mode, also knock out any residual white with multiply */
-[data-theme="light"] .hero-char img {
-  mix-blend-mode: multiply;
-}
+[data-theme="light"] .hero-char img { mix-blend-mode: multiply; }
+
+/* Name in column 1 — full height of row 1 */
+.hero-name-wrap { grid-column: 1; grid-row: 1; }
+
+/* All full-width elements span both columns */
+.hero-marquee      { grid-column: 1 / -1; grid-row: 2; }
+.hero-strip-bottom { grid-column: 1 / -1; grid-row: 3; }
+.hero-stats-wrap   { grid-column: 1 / -1; grid-row: 4; }
+.scroll-indicator  { grid-column: 1 / -1; }
+
 @keyframes char-float {
-  0%, 100% { transform: translateY(-52%); }
-  50%       { transform: translateY(-62%); }
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-18px); }
 }
 
-/* Tablet: keep absolutely positioned but smaller */
-@media (max-width: 1100px) {
-  .hero-char {
-    height: clamp(160px, 22vw, 260px);
-    right: clamp(12px, 3vw, 40px);
-  }
-}
-
-/* Mobile: pull into normal flow, centered between name and marquee */
+/* Mobile: switch back to single-column flex, astronaut flows between name and marquee */
 @media (max-width: 768px) {
-  .hero-char {
-    position: relative;
-    right: auto; top: auto;
-    transform: none;
-    animation: char-float-mobile 6s ease-in-out infinite;
-    height: clamp(160px, 48vw, 260px);
-    width: auto;
-    align-self: center;
-    order: 2;
-    margin: 8px auto;
+  #hero {
+    display: flex;
+    flex-direction: column;
   }
-  .hero-name-wrap  { order: 1; }
-  .hero-marquee    { order: 3; }
+  .hero-char {
+    order: 2;
+    align-self: center;
+    height: clamp(160px, 48vw, 260px);
+    padding: 0;
+    animation: char-float-mobile 6s ease-in-out infinite;
+  }
+  .hero-name-wrap    { order: 1; }
+  .hero-marquee      { order: 3; }
   .hero-strip-bottom { order: 4; }
-  .hero-stats-wrap { order: 5; }
+  .hero-stats-wrap   { order: 5; }
 }
 @keyframes char-float-mobile {
   0%, 100% { transform: translateY(0); }
@@ -339,9 +343,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 
 /* ── TYPOGRAPHIC MONUMENT: name ── */
 .hero-name-wrap {
-  flex: 1; display: flex; flex-direction: column; justify-content: center;
-  padding: 12px clamp(24px, 7vw, 96px) 12px;
-  position: relative; z-index: 2; min-height: 0; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 12px clamp(12px, 2vw, 32px) 12px clamp(24px, 7vw, 96px);
+  position: relative; z-index: 2; min-height: 0;
 }
 .hero-name {
   font-family: 'Syne', system-ui, sans-serif;
@@ -350,12 +354,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .hn-1 {
   display: block;
-  font-size: clamp(44px, 7.0vw, 108px);
+  font-size: clamp(44px, 5.8vw, 104px);
   color: var(--text);
 }
 .hn-2 {
   display: block;
-  font-size: clamp(44px, 7.0vw, 108px);
+  font-size: clamp(44px, 5.8vw, 104px);
   background: linear-gradient(120deg, var(--accent) 0%, #6EA8FE 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;

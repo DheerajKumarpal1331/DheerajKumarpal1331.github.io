@@ -331,8 +331,8 @@ function renderEducation() {
 
   const certHTML = certifications.map(c => `
     <div class="cert-chip">
-      <span class="cert-chip-icon">${c.icon}</span>
-      <span class="cert-chip-name">${c.name}${c.code ? ` (${c.code})` : ''}</span>
+      <img class="cert-chip-logo" src="${c.logo}" alt="${c.issuer} logo" loading="lazy">
+      <span class="cert-chip-name">${c.name}${c.code ? ` <span class="cert-code-badge">${c.code}</span>` : ''}</span>
     </div>
   `).join('');
 

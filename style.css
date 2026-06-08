@@ -743,25 +743,25 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   margin-bottom: 16px;
 }
 
-/* Degree cards — 2 columns */
-.edu-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* Degree cards — 2 columns, compact */
+.edu-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .edu-card {
-  display: flex; gap: 18px; align-items: flex-start;
+  display: flex; gap: 14px; align-items: center;
   background: var(--glass-bg); border: 1px solid var(--glass-border);
   backdrop-filter: blur(14px) saturate(180%);
   -webkit-backdrop-filter: blur(14px) saturate(180%);
   box-shadow: var(--glass-shadow);
-  border-radius: var(--radius-lg); padding: 22px 24px;
-  transition: box-shadow 0.25s, transform 0.25s;
+  border-radius: var(--radius-md); padding: 14px 18px;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
-.edu-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
-.edu-card-icon { font-size: 26px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
-.edu-card-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.edu-card-title { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
-.edu-card-sub { font-size: 13px; color: var(--text-mid); font-weight: 500; }
+.edu-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.edu-card-icon { font-size: 20px; line-height: 1; flex-shrink: 0; }
+.edu-card-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.edu-card-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.edu-card-sub { font-size: 12px; color: var(--text-mid); font-weight: 500; }
 .edu-card-meta {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; color: var(--text-muted); margin-top: 4px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--text-muted); margin-top: 2px; flex-wrap: wrap;
 }
 .edu-dot { opacity: 0.4; }
 
@@ -772,15 +772,24 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
   gap: 10px;
 }
 .cert-chip {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 10px;
   background: var(--glass-bg); border: 1px solid var(--glass-border);
   border-radius: 10px; padding: 10px 14px;
   transition: border-color 0.2s, box-shadow 0.2s;
   cursor: default;
 }
 .cert-chip:hover { border-color: rgba(var(--accent-rgb), 0.4); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.07); }
-.cert-chip-icon { font-size: 16px; line-height: 1; flex-shrink: 0; }
-.cert-chip-name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.35; }
+.cert-chip-logo {
+  width: 20px; height: 20px; flex-shrink: 0;
+  object-fit: contain; display: block;
+}
+.cert-chip-name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.35; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cert-code-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+  color: var(--accent); background: rgba(var(--accent-rgb), 0.12);
+  border: 1px solid rgba(var(--accent-rgb), 0.25);
+  border-radius: 5px; padding: 1px 6px; white-space: nowrap;
+}
 
 /* ── ═══ CONTACT ═══ ──────────────────────────────────────── */
 .contact-wrapper {

@@ -782,13 +782,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .cert-chip-logo {
   width: 20px; height: 20px; flex-shrink: 0;
   object-fit: contain; display: block;
-  /* simple-icons SVGs are black by default — invert to white for dark bg */
   filter: brightness(0) invert(0.85);
   transition: filter 0.2s;
 }
 .cert-chip:hover .cert-chip-logo { filter: brightness(0) invert(1); }
 [data-theme="light"] .cert-chip-logo { filter: brightness(0) invert(0.15); }
 [data-theme="light"] .cert-chip:hover .cert-chip-logo { filter: brightness(0) invert(0); }
+
+/* Inline SVG logos (e.g. SAS which has no CDN icon) */
+.cert-chip-logo--svg {
+  width: 36px; height: 20px; flex-shrink: 0; display: flex; align-items: center;
+  filter: brightness(0) invert(0.85); transition: filter 0.2s;
+}
+.cert-chip-logo--svg svg { width: 100%; height: 100%; }
+.cert-chip:hover .cert-chip-logo--svg { filter: brightness(0) invert(1); }
+[data-theme="light"] .cert-chip-logo--svg { filter: brightness(0) invert(0.15); }
+[data-theme="light"] .cert-chip:hover .cert-chip-logo--svg { filter: brightness(0) invert(0); }
 .cert-chip-name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.35; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .cert-code-badge {
   font-size: 10px; font-weight: 700; letter-spacing: 0.05em;

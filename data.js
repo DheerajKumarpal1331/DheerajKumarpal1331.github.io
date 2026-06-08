@@ -247,14 +247,14 @@ const PORTFOLIO = {
       issuer: "SAS Institute",
       code:   null,
       year:   null,
-      logo:   "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/sas.svg",
+      logo:   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" fill="currentColor"><text x="18" y="15" text-anchor="middle" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="13" letter-spacing="1.5">SAS</text></svg>`,
     },
     {
       name:   "SAS Certified Advanced Programmer",
       issuer: "SAS Institute",
       code:   null,
       year:   null,
-      logo:   "https://cdn.jsdelivr.net/npm/simple-icons@11/icons/sas.svg",
+      logo:   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 20" fill="currentColor"><text x="18" y="15" text-anchor="middle" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="13" letter-spacing="1.5">SAS</text></svg>`,
     },
     {
       name:   "Azure Fundamentals",

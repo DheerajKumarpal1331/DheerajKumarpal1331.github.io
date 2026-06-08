@@ -329,12 +329,16 @@ function renderEducation() {
     </div>
   `).join('');
 
-  const certHTML = certifications.map(c => `
+  const certHTML = certifications.map(c => {
+    const logoEl = c.logo.startsWith('<svg')
+      ? `<span class="cert-chip-logo cert-chip-logo--svg">${c.logo}</span>`
+      : `<img class="cert-chip-logo" src="${c.logo}" alt="${c.issuer} logo" loading="lazy">`;
+    return `
     <div class="cert-chip">
-      <img class="cert-chip-logo" src="${c.logo}" alt="${c.issuer} logo" loading="lazy">
+      ${logoEl}
       <span class="cert-chip-name">${c.name}${c.code ? ` <span class="cert-code-badge">${c.code}</span>` : ''}</span>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   grid.innerHTML = `
     <div class="edu-section reveal">

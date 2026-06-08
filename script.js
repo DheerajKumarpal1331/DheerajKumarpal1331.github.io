@@ -293,7 +293,7 @@ function initContactForm() {
   const btnIcon = $('#form-btn-icon');
   if (!form) return;
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     let valid = true;
     form.querySelectorAll('input, textarea').forEach(field => {
@@ -304,17 +304,37 @@ function initContactForm() {
     });
     if (!valid) return;
 
-    // Simulate send
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
     if (btnText) btnText.textContent = 'Sending…';
-    setTimeout(() => {
+
+    const data = {
+      name:    document.getElementById('cf-name')?.value,
+      email:   document.getElementById('cf-email')?.value,
+      message: document.getElementById('cf-msg')?.value,
+    };
+
+    try {
+      // Formspree endpoint — replace YOUR_FORM_ID after registering at formspree.io
+      const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    JSON.stringify(data),
+      });
+      if (res.ok) {
+        form.reset();
+        if (success) { success.textContent = '✓ Message sent! I\'ll get back to you soon.'; success.classList.add('show'); }
+        setTimeout(() => success?.classList.remove('show'), 6000);
+      } else {
+        throw new Error('Server error');
+      }
+    } catch {
+      if (success) { success.textContent = '✗ Something went wrong. Please email me directly.'; success.classList.add('show'); }
+      setTimeout(() => success?.classList.remove('show'), 6000);
+    } finally {
       btn.disabled = false;
       if (btnText) btnText.textContent = 'Send Message';
-      form.reset();
-      if (success) { success.textContent = '✓ Message sent! I\'ll get back to you soon.'; success.classList.add('show'); }
-      setTimeout(() => success?.classList.remove('show'), 5000);
-    }, 1200);
+    }
   });
 
   // Clear error on input

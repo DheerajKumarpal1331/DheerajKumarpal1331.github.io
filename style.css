@@ -710,6 +710,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .social-link:hover { color: var(--accent); }
 .social-link svg { color: var(--accent); flex-shrink: 0; }
+.social-link--whatsapp svg { color: #25D366; }
+.social-link--whatsapp:hover { color: #25D366; }
 
 /* Contact form */
 .contact-right {

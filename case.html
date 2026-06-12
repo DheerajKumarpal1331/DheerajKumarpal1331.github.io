@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Study · Dheerajkumar Pal</title>
+  <meta name="description" content="Case study by Dheerajkumar Pal, Lead Data Scientist.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ─── Navbar ───────────────────────────────────────────── -->
+  <header id="navbar" class="scrolled">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        Dheeraj<span class="brand-dot">.</span>
+      </a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="index.html#about">About</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#education">Education</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <i data-lucide="moon" id="theme-icon-moon"></i>
+          <i data-lucide="sun"  id="theme-icon-sun" style="display:none"></i>
+        </button>
+        <a href="resume.pdf" class="btn-resume" download>
+          <i data-lucide="download" width="15" height="15"></i>
+          Resume
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="case-page">
+    <div class="container" id="case-root">
+      <!-- rendered by case.js -->
+    </div>
+  </main>
+
+  <!-- ─── Footer ────────────────────────────────────────── -->
+  <footer id="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-brand">Dheeraj<span class="brand-dot">.</span></span>
+      <span class="footer-copy">© <span id="footer-year"></span> Dheerajkumar Pal · Built with care, data &amp; coffee</span>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="case.js"></script>
+</body>
+</html>

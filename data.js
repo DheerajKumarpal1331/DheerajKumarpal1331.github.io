@@ -119,6 +119,7 @@ const PORTFOLIO = {
       role:   "Data Engineering",
       github: null,
       demo:   null,
+      caseId: "clickhouse",
     },
     {
       title:  "Fraud & Anomaly Detection System",
@@ -127,14 +128,16 @@ const PORTFOLIO = {
       role:   "Data Science",
       github: null,
       demo:   null,
+      caseId: "fraud",
     },
     {
-      title:  "Text-to-SQL with an LLM",
-      desc:   "Our ops and product teams were constantly raising tickets to get data out of the warehouse. Built a text-to-SQL tool so they could ask questions in plain English. Cut those ad-hoc requests by about 40%.",
-      tags:   ["Python", "LLM", "SQL", "FastAPI"],
+      title:  "Text-to-SQL with a Local LLM",
+      desc:   "Built an internal text-to-SQL tool at Mosambee that cut ad-hoc data requests by about 40%, then rebuilt the idea as an open-source, fully offline version: local LLM via Ollama, ChromaDB schema embeddings, 5 database engines, no data leaving the network.",
+      tags:   ["FastAPI", "React", "Ollama", "ChromaDB"],
       role:   "GenAI",
-      github: null,
+      github: "https://github.com/DheerajKumarpal1331/text-to-sql",
       demo:   null,
+      caseId: "text2sql",
     },
     {
       title:  "Customer Segmentation at J.P. Morgan",
@@ -151,6 +154,7 @@ const PORTFOLIO = {
       role:   "Data Engineering",
       github: null,
       demo:   null,
+      caseId: "etl",
     },
     {
       title:  "Document Extraction Pipeline (LTI)",
@@ -159,6 +163,186 @@ const PORTFOLIO = {
       role:   "Data Engineering",
       github: null,
       demo:   null,
+    },
+  ],
+
+  // ── Case studies (rendered on case.html?id=…) ──────────────
+  caseStudies: [
+    {
+      id:       "clickhouse",
+      title:    "ClickHouse Analytics Platform",
+      subtitle: "Rebuilding payment analytics for millions of events a day",
+      role:     "Lead Data Scientist · Mosambee",
+      period:   "2023 – Present",
+      stack:    ["ClickHouse", "Kafka", "Python", "Airflow", "MLflow"],
+      github:   null,
+      problem: [
+        "Payment analytics at Mosambee ran on a row-oriented database that was never built for analytical queries. Dashboards took minutes to load. Ad-hoc queries timed out often enough that the risk team would just ask an engineer to pull the data by hand.",
+        "The bigger problem was the fraud models. They needed fresh aggregates over recent transaction history, and with queries taking tens of seconds there was no way to score in real time. The models worked off stale snapshots.",
+      ],
+      approach: [
+        "Benchmarked ClickHouse against the incumbent and two alternatives on our real query patterns: wide aggregations over time windows, merchant-level rollups, velocity features. ClickHouse won by an order of magnitude on the queries we actually run.",
+        "Designed the schema around access patterns. MergeTree tables partitioned by date and ordered by merchant and timestamp, with materialized views keeping the rollups the fraud features needed.",
+        "Built ingestion on Kafka so events stream in continuously instead of landing in batches. Historical backfill ran as idempotent Airflow jobs, so a failed run could just run again.",
+        "Migrated consumers one at a time. Dashboards first since they were lowest risk, then analyst queries, then the model feature store. The old system stayed live until each one was verified on the new one.",
+        "Wired query latency and ingestion lag into our alerting so a regression shows up before users notice it.",
+      ],
+      architecture: {
+        nodes:   ["Payment events", "Kafka", "ClickHouse (MergeTree + MVs)", "Feature store / scoring", "Dashboards & alerts"],
+        caption: "Events stream through Kafka into ClickHouse. Materialized views keep the rollups that feed real-time scoring and the analyst dashboards.",
+      },
+      results: [
+        { value: "60%+",      label: "query latency reduction (p99)" },
+        { value: "Millions",  label: "events ingested per day" },
+        { value: "Real-time", label: "model scoring on fresh aggregates" },
+      ],
+      next: "fraud",
+    },
+    {
+      id:       "fraud",
+      title:    "Fraud & Anomaly Detection System",
+      subtitle: "Models the risk team actually hears from",
+      role:     "Lead Data Scientist · Mosambee",
+      period:   "2023 – Present",
+      stack:    ["Python", "Scikit-learn", "XGBoost", "Airflow", "MLflow", "Kafka"],
+      github:   null,
+      problem: [
+        "Fraud patterns shift weekly, and a model that was sharp at deployment quietly rots. We had no systematic monitoring. When model behaviour shifted, the risk team usually found out from chargebacks, days later.",
+        "There was also no audit trail. Nobody could say which model version was scoring production traffic, when it was trained, or on what data.",
+      ],
+      approach: [
+        "Built gradient-boosted models for transaction-level fraud scoring. The features came from the ClickHouse platform: merchant velocity, amount deviation, time-of-day patterns, device signals.",
+        "Set up MLflow so every training run is logged with its parameters, metrics and data lineage. Production models get promoted through the registry instead of copied by hand.",
+        "Added drift monitoring as daily Airflow jobs that compare live feature and score distributions against training baselines. The thresholds took real tuning; make them too sensitive and people stop reading the alerts.",
+        "Made the alerts land in the risk team's channel with context: which feature shifted and by how much. A red light on its own is useless.",
+        "Retraining is now triggered by drift severity, not the calendar.",
+      ],
+      architecture: {
+        nodes:   ["Transactions", "Feature pipeline (ClickHouse)", "Fraud models (XGBoost)", "MLflow registry", "Drift monitor → Risk alerts"],
+        caption: "Features feed versioned models. A daily drift monitor compares live distributions against training baselines and pings the risk team with context.",
+      },
+      results: [
+        { value: "100M+",        label: "transactions in scope" },
+        { value: "Days → hours", label: "time to detect model drift" },
+        { value: "Full",         label: "model lineage & audit trail" },
+      ],
+      next: "text2sql",
+    },
+    {
+      id:       "text2sql",
+      title:    "Text-to-SQL with a Local LLM",
+      subtitle: "Started as an internal tool at Mosambee. Rebuilt from scratch as an offline, self-hosted open-source project.",
+      role:     "Lead Data Scientist · Mosambee → open-source rebuild",
+      period:   "2024 – Present",
+      stack:    ["FastAPI", "React + TypeScript", "Ollama", "ChromaDB", "PostgreSQL", "Docker"],
+      github:   "https://github.com/DheerajKumarpal1331/text-to-sql",
+      problem: [
+        "At Mosambee, product and ops asked for data constantly. Things like how many transactions failed for one merchant last week. Every question became a ticket, the queue ate about a day of analyst time per week, and people waited days for one-line answers. Dashboards never kept up because the questions were too varied to pre-build, and nobody outside the data team was going to write SQL. I built an internal text-to-SQL tool, and ad-hoc requests dropped by about 40%.",
+        "It left an itch though. In payments you can't send your schema to a cloud LLM. The schema alone reveals business logic, and compliance will never sign off. And a model that writes SQL can also write a DELETE. So I rebuilt the idea from scratch as a personal open-source project. Simpler than the production version, but fully offline and safe by default. That rebuild is what's on GitHub.",
+      ],
+      approach: [
+        "Everything runs locally. SQL generation uses Ollama with qwen3-coder:30b, embeddings use nomic-embed-text. No API keys, nothing leaves the machine.",
+        "ChromaDB stores an embedding for every table, and each successful query gets stored back as a few-shot example. The longer you use it, the better it gets at your specific schema. If the vector store is empty it falls back to full schema introspection.",
+        "Generated SQL goes through a validator that blocks DROP, DELETE, UPDATE and DDL unless the connection is explicitly write-enabled. Database credentials sit AES-256-GCM encrypted at rest. Auth is RS256 JWT with admin and analyst roles, and login is rate limited.",
+        "A 30B model is slow, so the UX has to hide it. SQL tokens stream to the browser over server-sent events, the model's think blocks get stripped in real time, and results land in a paginated table.",
+        "One connector interface covers PostgreSQL, MySQL, MariaDB and ClickHouse. MongoDB works too; there the LLM writes aggregation pipelines instead of SQL.",
+        "The whole thing ships as a five-service Docker Compose stack, seeded with a generated 37-table, 145,000-row PSP payments database so demos look like real life.",
+      ],
+      architecture: {
+        svg: `<svg viewBox="0 0 760 410" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Text-to-SQL architecture diagram">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arch-arrow-head"/>
+    </marker>
+  </defs>
+  <!-- Browser -->
+  <g class="arch-gnode">
+    <rect x="160" y="6" width="200" height="48" rx="10"/>
+    <text x="260" y="26" text-anchor="middle" class="arch-t">Browser</text>
+    <text x="260" y="42" text-anchor="middle" class="arch-s">React + TS · SSE streaming</text>
+  </g>
+  <line x1="260" y1="54" x2="260" y2="78" class="arch-line" marker-end="url(#arr)"/>
+  <!-- nginx -->
+  <g class="arch-gnode">
+    <rect x="135" y="80" width="250" height="48" rx="10"/>
+    <text x="260" y="100" text-anchor="middle" class="arch-t">nginx</text>
+    <text x="260" y="116" text-anchor="middle" class="arch-s">reverse proxy · rate limiting</text>
+  </g>
+  <line x1="260" y1="128" x2="260" y2="152" class="arch-line" marker-end="url(#arr)"/>
+  <!-- backend -->
+  <g class="arch-gnode arch-main">
+    <rect x="110" y="154" width="300" height="58" rx="10"/>
+    <text x="260" y="178" text-anchor="middle" class="arch-t">FastAPI backend</text>
+    <text x="260" y="196" text-anchor="middle" class="arch-s">prompt builder · SQL validator · JWT auth</text>
+  </g>
+  <!-- target DBs (right) -->
+  <line x1="410" y1="183" x2="494" y2="183" class="arch-line" marker-end="url(#arr)"/>
+  <text x="452" y="172" text-anchor="middle" class="arch-lbl">validated SQL</text>
+  <text x="452" y="200" text-anchor="middle" class="arch-lbl">read-only</text>
+  <g class="arch-gnode">
+    <rect x="498" y="154" width="240" height="58" rx="10"/>
+    <text x="618" y="178" text-anchor="middle" class="arch-t">Target databases</text>
+    <text x="618" y="196" text-anchor="middle" class="arch-s">Postgres · MySQL · Mongo · ClickHouse</text>
+  </g>
+  <!-- three supporting services -->
+  <line x1="180" y1="212" x2="124" y2="288" class="arch-line" marker-end="url(#arr)"/>
+  <line x1="260" y1="212" x2="376" y2="288" class="arch-line" marker-end="url(#arr)"/>
+  <line x1="340" y1="212" x2="630" y2="288" class="arch-line" marker-end="url(#arr)"/>
+  <g class="arch-gnode">
+    <rect x="14" y="292" width="220" height="58" rx="10"/>
+    <text x="124" y="316" text-anchor="middle" class="arch-t">PostgreSQL (app db)</text>
+    <text x="124" y="334" text-anchor="middle" class="arch-s">users · connections · query history</text>
+  </g>
+  <g class="arch-gnode">
+    <rect x="266" y="292" width="220" height="58" rx="10"/>
+    <text x="376" y="316" text-anchor="middle" class="arch-t">ChromaDB</text>
+    <text x="376" y="334" text-anchor="middle" class="arch-s">schema embeddings · few-shot examples</text>
+  </g>
+  <g class="arch-gnode">
+    <rect x="518" y="292" width="228" height="58" rx="10"/>
+    <text x="632" y="316" text-anchor="middle" class="arch-t">Ollama (local LLM)</text>
+    <text x="632" y="334" text-anchor="middle" class="arch-s">qwen3-coder:30b · nomic-embed-text</text>
+  </g>
+  <text x="380" y="392" text-anchor="middle" class="arch-lbl">fully self-hosted · Docker Compose · no cloud calls</text>
+</svg>`,
+        caption: "The open-source rebuild. A question goes through nginx to the FastAPI backend, which builds a schema-aware prompt from ChromaDB, generates SQL on a local Ollama model, validates it and runs it read-only against the target database.",
+      },
+      results: [
+        { value: "40%",          label: "fewer ad-hoc data requests at Mosambee (internal version)" },
+        { value: "100% offline", label: "open-source rebuild: local LLM, no data leaves the network" },
+        { value: "5 engines",    label: "PostgreSQL, MySQL, MariaDB, MongoDB, ClickHouse" },
+      ],
+      next: "etl",
+    },
+    {
+      id:       "etl",
+      title:    "ETL Automation with Airflow",
+      subtitle: "From weekly manual toil to pipelines that run themselves",
+      role:     "Lead Data Scientist · Mosambee",
+      period:   "2023 – 2024",
+      stack:    ["Airflow", "Python", "SQL", "ClickHouse"],
+      github:   null,
+      problem: [
+        "Our core reporting and model-input pipelines were a chain of manual steps. Someone ran scripts in a set order, eyeballed the outputs, and re-ran whatever failed. It burned real team time every week, and one missed step meant silently wrong data downstream.",
+        "The process also lived in people's heads. Onboarding was slow, vacations were risky, and every data hiccup flowed straight into the models.",
+      ],
+      approach: [
+        "Mapped every manual workflow into explicit Airflow DAGs with dependencies, schedules and owners. Just drawing the map exposed redundant steps, which we deleted.",
+        "Rebuilt the jobs to be idempotent so any task can re-run safely. Recovery went from carefully repairing state to clear and re-trigger.",
+        "Put data quality gates between stages: row-count deltas, null-rate checks, schema assertions. A failed check stops the downstream tasks instead of passing bad data along.",
+        "Wrote alerts with enough context to act on (which DAG, which check, which partition) and runbooks for the failures that kept coming back.",
+        "Tracked hours saved and incident counts before and after, so the impact was a number instead of a feeling.",
+      ],
+      architecture: {
+        nodes:   ["Sources", "Airflow DAGs (idempotent tasks)", "Quality gates", "ClickHouse / marts", "Reports & model inputs"],
+        caption: "Idempotent Airflow DAGs with quality gates between stages. A failure stops propagation and alerts with context instead of shipping bad data.",
+      },
+      results: [
+        { value: "1,200+ hrs", label: "manual work eliminated per year" },
+        { value: "₹1.4M",      label: "approximate annual cost saved" },
+        { value: "Fewer",      label: "data incidents reaching downstream models" },
+      ],
+      next: "clickhouse",
     },
   ],
 

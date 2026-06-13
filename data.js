@@ -9,7 +9,7 @@ const PORTFOLIO = {
     initials:  "DKP",
     role:      "Lead Data Scientist & AI/ML Engineer",
     tagline:   "I build things with data: models that catch fraud, pipelines that don't break at 3am, and tools that help non-technical folks actually use the data.",
-    bio:       "I've spent 7+ years in fintech and payments, mostly at the overlap of ML and engineering. Not just building models, but making sure they work reliably when it actually matters. At Mosambee, I own the full picture: the pipelines feeding the models, the monitoring that catches drift early, and the tooling keeping the team moving. Won first place at the Pine Labs Ideathon 2026 too, which was a good reminder that the work lands beyond just internal dashboards.",
+    bio:       "I've spent 7+ years in fintech and payments, mostly at the overlap of ML and engineering. Not just building models, but making sure they work reliably when it actually matters. In my current role I own the full picture: the pipelines feeding the models, the monitoring that catches drift early, and the tooling keeping the team moving. Won first place at a national fintech ideathon in 2026 too, which was a good reminder that the work lands beyond just internal dashboards.",
     email:     "paldheeraj1331@gmail.com",
     whatsapp:  "https://wa.me/919137074621",
     linkedin:  "https://linkedin.com/in/dheerajkumarpal",
@@ -114,16 +114,16 @@ const PORTFOLIO = {
   projects: [
     {
       title:  "ClickHouse Analytics Platform",
-      desc:   "Payment transaction data at Mosambee was slow to query and painful to monitor. Moved us to ClickHouse and now it handles millions of events a day, query latency is down 60%+, and it powers the real-time model scoring layer on top.",
-      tags:   ["ClickHouse", "Python", "Kafka", "MLflow"],
+      desc:   "Split OLTP from OLAP so fraud models score on fresh features instead of stale snapshots. Built the migration in production (60%+ latency cut, real-time scoring), then rebuilt the whole design in the open on Indian payment rails: Postgres to Kafka to ClickHouse, feature store, sub-100ms fraud API.",
+      tags:   ["ClickHouse", "Kafka", "Postgres", "MLflow"],
       role:   "Data Engineering",
-      github: null,
+      github: "https://github.com/DheerajKumarpal1331/clickhouse-payment-analytics",
       demo:   null,
       caseId: "clickhouse",
     },
     {
       title:  "Fraud & Anomaly Detection System",
-      desc:   "Built the fraud detection models at Mosambee and wired them into alerting pipelines so the risk team doesn't have to go looking. When model behaviour shifts, they get a notification. Not three days later.",
+      desc:   "Built the fraud detection models in production and wired them into alerting pipelines so the risk team doesn't have to go looking. When model behaviour shifts, they get a notification. Not three days later.",
       tags:   ["Python", "Scikit-learn", "Airflow", "MLflow", "Kafka"],
       role:   "Data Science",
       github: null,
@@ -132,7 +132,7 @@ const PORTFOLIO = {
     },
     {
       title:  "Text-to-SQL with a Local LLM",
-      desc:   "Built an internal text-to-SQL tool at Mosambee that cut ad-hoc data requests by about 40%, then rebuilt the idea as an open-source, fully offline version: local LLM via Ollama, ChromaDB schema embeddings, 5 database engines, no data leaving the network.",
+      desc:   "Built an internal text-to-SQL tool at work that cut ad-hoc data requests by about 40%, then rebuilt the idea as an open-source, fully offline version: local LLM via Ollama, ChromaDB schema embeddings, 5 database engines, no data leaving the network.",
       tags:   ["FastAPI", "React", "Ollama", "ChromaDB"],
       role:   "GenAI",
       github: "https://github.com/DheerajKumarpal1331/text-to-sql",
@@ -149,7 +149,7 @@ const PORTFOLIO = {
     },
     {
       title:  "ETL Automation with Airflow",
-      desc:   "Manual ETL was eating into team time at Mosambee every single week. Automated the pipelines end-to-end, saved 1,200+ hours a year and roughly Rs. 1.4M in cost. Data reliability went up too, which made downstream models noticeably more stable.",
+      desc:   "Manual ETL was eating into team time every single week. Automated the pipelines end-to-end, saved 1,200+ hours a year and roughly Rs. 1.4M in cost. Data reliability went up too, which made downstream models noticeably more stable.",
       tags:   ["Airflow", "Python", "SQL", "ClickHouse"],
       role:   "Data Engineering",
       github: null,
@@ -170,31 +170,99 @@ const PORTFOLIO = {
   caseStudies: [
     {
       id:       "clickhouse",
-      title:    "ClickHouse Analytics Platform",
-      subtitle: "Rebuilding payment analytics for millions of events a day",
-      role:     "Lead Data Scientist · Mosambee",
+      title:    "ClickHouse Payment Analytics Platform",
+      subtitle: "Splitting OLTP from OLAP so fraud models score on fresh features. Built in production, then rebuilt in the open.",
+      role:     "Lead Data Scientist · production work, then rebuilt in the open",
       period:   "2023 – Present",
-      stack:    ["ClickHouse", "Kafka", "Python", "Airflow", "MLflow"],
-      github:   null,
+      stack:    ["PostgreSQL", "Kafka", "ClickHouse", "FastAPI", "MLflow", "Airflow", "Docker"],
+      github:   "https://github.com/DheerajKumarpal1331/clickhouse-payment-analytics",
       problem: [
-        "Payment analytics at Mosambee ran on a row-oriented database that was never built for analytical queries. Dashboards took minutes to load. Ad-hoc queries timed out often enough that the risk team would just ask an engineer to pull the data by hand.",
+        "Payment analytics in production ran on a row-oriented database that was never built for analytical queries. Dashboards took minutes to load, and ad-hoc queries timed out often enough that the risk team would just ask an engineer to pull data by hand.",
         "The bigger problem was the fraud models. They needed fresh aggregates over recent transaction history, and with queries taking tens of seconds there was no way to score in real time. The models worked off stale snapshots.",
+        "I wanted to rebuild that whole OLTP-to-OLAP design in the open, with no proprietary data or code in it. So I modelled a payment company on Indian rails (UPI, RuPay, RBI's MDR and GST rules, T+1 settlement), generated realistic synthetic data, and built the platform phase by phase. That repo is what's on GitHub.",
       ],
       approach: [
-        "Benchmarked ClickHouse against the incumbent and two alternatives on our real query patterns: wide aggregations over time windows, merchant-level rollups, velocity features. ClickHouse won by an order of magnitude on the queries we actually run.",
-        "Designed the schema around access patterns. MergeTree tables partitioned by date and ordered by merchant and timestamp, with materialized views keeping the rollups the fraud features needed.",
-        "Built ingestion on Kafka so events stream in continuously instead of landing in batches. Historical backfill ran as idempotent Airflow jobs, so a failed run could just run again.",
-        "Migrated consumers one at a time. Dashboards first since they were lowest risk, then analyst queries, then the model feature store. The old system stayed live until each one was verified on the new one.",
-        "Wired query latency and ingestion lag into our alerting so a regression shows up before users notice it.",
+        "Kept OLTP and OLAP separate. PostgreSQL 16 stays the normalized source of truth (11 domains, monthly-partitioned transactions); ClickHouse is the denormalized analytical mirror. Neither gets asked to do the other's job.",
+        "Streamed the hot path instead of batch ETL. Events flow from Postgres to Kafka to ClickHouse continuously. Airflow only handles backfill, feature rollups, retraining and data-quality checks, never the live ingest.",
+        "Let ClickHouse do the aggregating. Materialized views keep merchant hourly, daily and monthly rollups, risk summaries and fraud-feature tables fresh on write, so dashboards and features read data that's already aggregated.",
+        "Computed features once and served them twice. The same ClickHouse aggregates back both offline training (point-in-time) and online scoring (latest value), which keeps train/serve skew low.",
+        "Served the fraud score in under 100ms. The scoring API reads online features straight from ClickHouse and a model pulled from the MLflow registry, skipping batch entirely.",
+        "Made the whole thing reproducible. One docker compose up brings up the 43-service stack with the Postgres schema, Kafka topics and MLflow registry provisioned as code, and Kafka lag, query time and model latency are all first-class Prometheus metrics.",
       ],
       architecture: {
-        nodes:   ["Payment events", "Kafka", "ClickHouse (MergeTree + MVs)", "Feature store / scoring", "Dashboards & alerts"],
-        caption: "Events stream through Kafka into ClickHouse. Materialized views keep the rollups that feed real-time scoring and the analyst dashboards.",
+        svg: `<svg viewBox="0 0 760 478" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ClickHouse payment analytics architecture diagram">
+  <defs>
+    <marker id="arr-ch" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="arch-arrow-head"/>
+    </marker>
+  </defs>
+  <!-- Sources -->
+  <g class="arch-gnode">
+    <rect x="290" y="6" width="180" height="44" rx="10"/>
+    <text x="380" y="28" text-anchor="middle" class="arch-t">Sources</text>
+    <text x="380" y="42" text-anchor="middle" class="arch-s">POS · UPI · QR · cards</text>
+  </g>
+  <line x1="380" y1="50" x2="380" y2="72" class="arch-line" marker-end="url(#arr-ch)"/>
+  <!-- Gateway -->
+  <g class="arch-gnode">
+    <rect x="250" y="74" width="260" height="46" rx="10"/>
+    <text x="380" y="97" text-anchor="middle" class="arch-t">Payment Gateway API</text>
+    <text x="380" y="112" text-anchor="middle" class="arch-s">FastAPI · auth · capture · refund</text>
+  </g>
+  <line x1="380" y1="120" x2="380" y2="142" class="arch-line" marker-end="url(#arr-ch)"/>
+  <!-- Postgres -->
+  <g class="arch-gnode">
+    <rect x="250" y="144" width="260" height="46" rx="10"/>
+    <text x="380" y="167" text-anchor="middle" class="arch-t">PostgreSQL 16 · OLTP</text>
+    <text x="380" y="182" text-anchor="middle" class="arch-s">system of record · 11 domains</text>
+  </g>
+  <line x1="380" y1="190" x2="380" y2="212" class="arch-line" marker-end="url(#arr-ch)"/>
+  <text x="398" y="206" class="arch-lbl">publish</text>
+  <!-- Kafka -->
+  <g class="arch-gnode">
+    <rect x="250" y="214" width="260" height="46" rx="10"/>
+    <text x="380" y="237" text-anchor="middle" class="arch-t">Apache Kafka</text>
+    <text x="380" y="252" text-anchor="middle" class="arch-s">8 topics · schema registry · DLQ</text>
+  </g>
+  <line x1="380" y1="260" x2="380" y2="282" class="arch-line" marker-end="url(#arr-ch)"/>
+  <text x="398" y="276" class="arch-lbl">stream</text>
+  <!-- ClickHouse (main) -->
+  <g class="arch-gnode arch-main">
+    <rect x="230" y="284" width="300" height="52" rx="10"/>
+    <text x="380" y="309" text-anchor="middle" class="arch-t">ClickHouse 24.3 · OLAP</text>
+    <text x="380" y="325" text-anchor="middle" class="arch-s">facts + dims + materialized views</text>
+  </g>
+  <!-- branches -->
+  <line x1="340" y1="336" x2="195" y2="362" class="arch-line" marker-end="url(#arr-ch)"/>
+  <line x1="420" y1="336" x2="565" y2="362" class="arch-line" marker-end="url(#arr-ch)"/>
+  <!-- Feature store -->
+  <g class="arch-gnode">
+    <rect x="70" y="364" width="250" height="46" rx="10"/>
+    <text x="195" y="387" text-anchor="middle" class="arch-t">Feature store</text>
+    <text x="195" y="402" text-anchor="middle" class="arch-s">offline (point-in-time) + online</text>
+  </g>
+  <!-- Dashboards -->
+  <g class="arch-gnode">
+    <rect x="440" y="364" width="250" height="46" rx="10"/>
+    <text x="565" y="387" text-anchor="middle" class="arch-t">Plotly Dash dashboards</text>
+    <text x="565" y="402" text-anchor="middle" class="arch-s">exec · merchant · fraud · ops</text>
+  </g>
+  <line x1="195" y1="410" x2="195" y2="430" class="arch-line" marker-end="url(#arr-ch)"/>
+  <!-- Fraud API -->
+  <g class="arch-gnode">
+    <rect x="70" y="432" width="250" height="46" rx="10"/>
+    <text x="195" y="455" text-anchor="middle" class="arch-t">Fraud scoring API</text>
+    <text x="195" y="470" text-anchor="middle" class="arch-s">FastAPI · MLflow model · &lt; 100 ms</text>
+  </g>
+  <text x="600" y="445" text-anchor="middle" class="arch-lbl">Airflow orchestration</text>
+  <text x="600" y="462" text-anchor="middle" class="arch-lbl">Prometheus + Grafana</text>
+</svg>`,
+        caption: "The open-source rebuild. Events flow from the gateway into Postgres, publish to Kafka, and land in ClickHouse, where materialized views keep rollups fresh for both the feature store and the dashboards. The fraud API reads online features and an MLflow model to score in under 100ms.",
       },
       results: [
-        { value: "60%+",      label: "query latency reduction (p99)" },
-        { value: "Millions",  label: "events ingested per day" },
-        { value: "Real-time", label: "model scoring on fresh aggregates" },
+        { value: "60%+",      label: "query latency cut in production" },
+        { value: "< 100 ms",  label: "fraud-score latency target in the open rebuild" },
+        { value: "Millions",  label: "transactions/day the platform is built to handle" },
       ],
       next: "fraud",
     },
@@ -202,7 +270,7 @@ const PORTFOLIO = {
       id:       "fraud",
       title:    "Fraud & Anomaly Detection System",
       subtitle: "Models the risk team actually hears from",
-      role:     "Lead Data Scientist · Mosambee",
+      role:     "Lead Data Scientist · payments",
       period:   "2023 – Present",
       stack:    ["Python", "Scikit-learn", "XGBoost", "Airflow", "MLflow", "Kafka"],
       github:   null,
@@ -231,13 +299,13 @@ const PORTFOLIO = {
     {
       id:       "text2sql",
       title:    "Text-to-SQL with a Local LLM",
-      subtitle: "Started as an internal tool at Mosambee. Rebuilt from scratch as an offline, self-hosted open-source project.",
-      role:     "Lead Data Scientist · Mosambee → open-source rebuild",
+      subtitle: "Started as an internal tool at work. Rebuilt from scratch as an offline, self-hosted open-source project.",
+      role:     "Lead Data Scientist · production work, then rebuilt in the open",
       period:   "2024 – Present",
       stack:    ["FastAPI", "React + TypeScript", "Ollama", "ChromaDB", "PostgreSQL", "Docker"],
       github:   "https://github.com/DheerajKumarpal1331/text-to-sql",
       problem: [
-        "At Mosambee, product and ops asked for data constantly. Things like how many transactions failed for one merchant last week. Every question became a ticket, the queue ate about a day of analyst time per week, and people waited days for one-line answers. Dashboards never kept up because the questions were too varied to pre-build, and nobody outside the data team was going to write SQL. I built an internal text-to-SQL tool, and ad-hoc requests dropped by about 40%.",
+        "At work, product and ops asked for data constantly. Things like how many transactions failed for one merchant last week. Every question became a ticket, the queue ate about a day of analyst time per week, and people waited days for one-line answers. Dashboards never kept up because the questions were too varied to pre-build, and nobody outside the data team was going to write SQL. I built an internal text-to-SQL tool, and ad-hoc requests dropped by about 40%.",
         "It left an itch though. In payments you can't send your schema to a cloud LLM. The schema alone reveals business logic, and compliance will never sign off. And a model that writes SQL can also write a DELETE. So I rebuilt the idea from scratch as a personal open-source project. Simpler than the production version, but fully offline and safe by default. That rebuild is what's on GitHub.",
       ],
       approach: [
@@ -308,7 +376,7 @@ const PORTFOLIO = {
         caption: "The open-source rebuild. A question goes through nginx to the FastAPI backend, which builds a schema-aware prompt from ChromaDB, generates SQL on a local Ollama model, validates it and runs it read-only against the target database.",
       },
       results: [
-        { value: "40%",          label: "fewer ad-hoc data requests at Mosambee (internal version)" },
+        { value: "40%",          label: "fewer ad-hoc data requests at work (internal version)" },
         { value: "100% offline", label: "open-source rebuild: local LLM, no data leaves the network" },
         { value: "5 engines",    label: "PostgreSQL, MySQL, MariaDB, MongoDB, ClickHouse" },
       ],
@@ -318,7 +386,7 @@ const PORTFOLIO = {
       id:       "etl",
       title:    "ETL Automation with Airflow",
       subtitle: "From weekly manual toil to pipelines that run themselves",
-      role:     "Lead Data Scientist · Mosambee",
+      role:     "Lead Data Scientist · payments",
       period:   "2023 – 2024",
       stack:    ["Airflow", "Python", "SQL", "ClickHouse"],
       github:   null,

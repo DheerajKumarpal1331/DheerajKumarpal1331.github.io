@@ -9,7 +9,7 @@ const PORTFOLIO = {
     initials:  "DKP",
     role:      "Lead Data Scientist & AI/ML Engineer",
     tagline:   "I build things with data: models that catch fraud, pipelines that don't break at 3am, and tools that help non-technical folks actually use the data.",
-    bio:       "I've spent 7+ years in fintech and payments, mostly at the overlap of ML and engineering. Not just building models, but making sure they work reliably when it actually matters. In my current role I own the full picture: the pipelines feeding the models, the monitoring that catches drift early, and the tooling keeping the team moving. Won first place at a national fintech ideathon in 2026 too, which was a good reminder that the work lands beyond just internal dashboards.",
+    bio:       "I've spent 7+ years in fintech and payments, mostly at the overlap of ML and engineering. Not just building models, but making sure they work reliably when it actually matters. At Mosambee, I own the full picture: the pipelines feeding the models, the monitoring that catches drift early, and the tooling keeping the team moving. Won first place at the Pine Labs Ideathon 2026 too, which was a good reminder that the work lands beyond just internal dashboards.",
     email:     "paldheeraj1331@gmail.com",
     whatsapp:  "https://wa.me/919137074621",
     linkedin:  "https://linkedin.com/in/dheerajkumarpal",

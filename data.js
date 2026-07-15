@@ -68,6 +68,7 @@ const PORTFOLIO = {
     {
       name: "Programming",
       icon: "code-2",
+      meta: "daily drivers · since 2018",
       skills: [
         { name: "Python (Pandas, NumPy, Scikit-learn)", pct: 95 },
         { name: "SQL",                                  pct: 93 },
@@ -79,6 +80,7 @@ const PORTFOLIO = {
     {
       name: "Machine Learning",
       icon: "brain",
+      meta: "fraud models in production",
       skills: [
         { name: "Scikit-learn / XGBoost / LightGBM",   pct: 93 },
         { name: "Deep Learning (TF / PyTorch / CNN)",   pct: 82 },
@@ -90,6 +92,7 @@ const PORTFOLIO = {
     {
       name: "Data Engineering",
       icon: "database",
+      meta: "100M+ transactions / day",
       skills: [
         { name: "Apache Airflow",    pct: 88 },
         { name: "Kafka / Flink",     pct: 80 },
@@ -101,6 +104,7 @@ const PORTFOLIO = {
     {
       name: "Cloud & MLOps",
       icon: "cloud",
+      meta: "AZ-900 · DP-900 · AI-900 certified",
       skills: [
         { name: "MLflow",                        pct: 88 },
         { name: "AWS (Redshift, S3)",            pct: 80 },
@@ -116,6 +120,7 @@ const PORTFOLIO = {
       title:  "ClickHouse Analytics Platform",
       desc:   "Split OLTP from OLAP so fraud models score on fresh features instead of stale snapshots. Built the migration in production (60%+ latency cut, real-time scoring), then rebuilt the whole design in the open on Indian payment rails: Postgres to Kafka to ClickHouse, feature store, sub-100ms fraud API.",
       tags:   ["ClickHouse", "Kafka", "Postgres", "MLflow"],
+      metric: "−60% latency",
       role:   "Data Engineering",
       github: "https://github.com/DheerajKumarpal1331/clickhouse-payment-analytics",
       demo:   null,
@@ -125,6 +130,7 @@ const PORTFOLIO = {
       title:  "Fraud & Anomaly Detection System",
       desc:   "Built the fraud detection models in production and wired them into alerting pipelines so the risk team doesn't have to go looking. When model behaviour shifts, they get a notification. Not three days later.",
       tags:   ["Python", "Scikit-learn", "Airflow", "MLflow", "Kafka"],
+      metric: "real-time alerts",
       role:   "Data Science",
       github: null,
       demo:   null,
@@ -134,6 +140,7 @@ const PORTFOLIO = {
       title:  "Text-to-SQL with a Local LLM",
       desc:   "Built an internal text-to-SQL tool at work that cut ad-hoc data requests by about 40%, then rebuilt the idea as an open-source, fully offline version: local LLM via Ollama, ChromaDB schema embeddings, 5 database engines, no data leaving the network.",
       tags:   ["FastAPI", "React", "Ollama", "ChromaDB"],
+      metric: "−40% ad-hoc requests",
       role:   "GenAI",
       github: "https://github.com/DheerajKumarpal1331/text-to-sql",
       demo:   null,
@@ -143,6 +150,7 @@ const PORTFOLIO = {
       title:  "Customer Segmentation at J.P. Morgan",
       desc:   "Segmentation models for the credit card marketing team that drove a 12% lift in campaign conversions. Also automated the scoring pipeline so what used to take a full day now takes under two hours.",
       tags:   ["Python", "SQL", "Scikit-learn", "A/B Testing"],
+      metric: "+12% conversions",
       role:   "Data Science",
       github: null,
       demo:   null,
@@ -151,6 +159,7 @@ const PORTFOLIO = {
       title:  "ETL Automation with Airflow",
       desc:   "Manual ETL was eating into team time every single week. Automated the pipelines end-to-end, saved 1,200+ hours a year and roughly Rs. 1.4M in cost. Data reliability went up too, which made downstream models noticeably more stable.",
       tags:   ["Airflow", "Python", "SQL", "ClickHouse"],
+      metric: "1,200+ hrs saved /yr",
       role:   "Data Engineering",
       github: null,
       demo:   null,
@@ -160,6 +169,7 @@ const PORTFOLIO = {
       title:  "Document Extraction Pipeline (LTI)",
       desc:   "At L&T Infotech, unstructured document data was a major bottleneck for the team. Built a Python + MongoDB extraction pipeline that cut data prep time by 70%. Also optimised ETL handling 100M+ transactions, improving runtime by 40%.",
       tags:   ["Python", "MongoDB", "SQL", "SAS"],
+      metric: "−70% prep time",
       role:   "Data Engineering",
       github: null,
       demo:   null,

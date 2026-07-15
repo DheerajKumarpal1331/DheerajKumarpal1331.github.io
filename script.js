@@ -85,27 +85,65 @@ function initActiveNav() {
   sections.forEach(s => io.observe(s));
 }
 
-// ── Typing animation ──────────────────────────────────────────
-function initTyping() {
-  const el = $('#typed-role');
-  if (!el) return;
-  const roles = PORTFOLIO.roles;
-  let ri = 0, ci = 0, del = false, paused = false;
+// ── Scroll progress bar ───────────────────────────────────────
+function initProgressBar() {
+  const bar = $('#scroll-progress');
+  if (!bar) return;
+  const update = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+}
 
-  function tick() {
-    const cur = roles[ri];
-    if (paused) { paused = false; setTimeout(tick, 1800); return; }
-    if (!del) {
-      el.textContent = cur.slice(0, ci + 1); ci++;
-      if (ci === cur.length) { paused = true; del = true; setTimeout(tick, 60); return; }
-      setTimeout(tick, 90);
-    } else {
-      el.textContent = cur.slice(0, ci - 1); ci--;
-      if (ci === 0) { del = false; ri = (ri + 1) % roles.length; setTimeout(tick, 400); return; }
-      setTimeout(tick, 48);
-    }
-  }
-  tick();
+// ── Magnetic CTAs ─────────────────────────────────────────────
+function initMagnetic() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  $$('.magnetic').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) / r.width;
+      const y = (e.clientY - r.top - r.height / 2) / r.height;
+      el.style.transform = `translate(${x * 10}px, ${y * 8}px)`;
+    });
+    el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+  });
+}
+
+// ── Stat count-ups ────────────────────────────────────────────
+function initCountUps() {
+  const els = $$('[data-count]');
+  if (!els.length) return;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const animate = el => {
+    const raw = el.dataset.count;
+    const m = raw.match(/^([^\d]*)([\d,.]+)(.*)$/);
+    if (!m || reduced) { el.textContent = raw; return; }
+    const prefix = m[1], suffix = m[3];
+    const target = parseFloat(m[2].replace(/,/g, ''));
+    const useCommas = m[2].includes(',');
+    const dur = 1200, t0 = performance.now();
+    const step = now => {
+      const p = Math.min((now - t0) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      let val = Math.round(target * eased);
+      if (useCommas) val = val.toLocaleString('en-US');
+      el.textContent = prefix + val + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animate(e.target); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.4 });
+  els.forEach(el => io.observe(el));
 }
 
 // ── Scroll-reveal (IntersectionObserver) ─────────────────────
@@ -116,21 +154,6 @@ function initReveal() {
   $$('.reveal').forEach(el => io.observe(el));
 }
 
-// ── Skill bar animation ───────────────────────────────────────
-function initSkillBars() {
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.querySelectorAll('.skill-fill').forEach(bar => {
-          bar.style.width = (bar.dataset.pct || '0') + '%';
-        });
-        io.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.3 });
-  $$('.skill-card').forEach(c => io.observe(c));
-}
-
 // ── Render: Hero stats ────────────────────────────────────────
 function renderHeroStats() {
   const row = $('#hero-stats-row');
@@ -138,7 +161,7 @@ function renderHeroStats() {
   row.className = 'hero-stats-row';
   row.innerHTML = PORTFOLIO.personal.stats.map(s => `
     <div class="hero-stat">
-      <span class="hero-stat-val">${s.value}</span>
+      <span class="hero-stat-val" data-count="${s.value}">${s.value}</span>
       <span class="hero-stat-lbl">${s.label}</span>
     </div>
   `).join('');
@@ -165,24 +188,7 @@ function renderAbout() {
   }
 }
 
-// ── Tagline cycle ─────────────────────────────────────────────
-function initTaglineCycle() {
-  const el = $('#hero-tagline-text');
-  if (!el || !PORTFOLIO.taglines || PORTFOLIO.taglines.length < 2) return;
-  let i = 0;
-  setInterval(() => {
-    i = (i + 1) % PORTFOLIO.taglines.length;
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(10px)';
-    setTimeout(() => {
-      el.textContent = PORTFOLIO.taglines[i];
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-    }, 380);
-  }, 3200);
-}
-
-// ── Render: Skills ────────────────────────────────────────────
+// ── Render: Skills (instrument clusters, no % bars) ──────────
 function renderSkills() {
   const grid = $('#skills-grid');
   if (!grid) return;
@@ -192,20 +198,13 @@ function renderSkills() {
         <div class="skill-card-icon">
           <i data-lucide="${cat.icon}" width="20" height="20"></i>
         </div>
-        <span class="skill-card-name">${cat.name}</span>
+        <div class="skill-card-titles">
+          <span class="skill-card-name">${cat.name}</span>
+          ${cat.meta ? `<span class="skill-card-meta">${cat.meta}</span>` : ''}
+        </div>
       </div>
-      <div class="skill-list">
-        ${cat.skills.map(s => `
-          <div class="skill-item">
-            <div class="skill-meta">
-              <span class="skill-name">${s.name}</span>
-              <span class="skill-pct">${s.pct}%</span>
-            </div>
-            <div class="skill-bar">
-              <div class="skill-fill" data-pct="${s.pct}"></div>
-            </div>
-          </div>
-        `).join('')}
+      <div class="skill-chiplist">
+        ${cat.skills.map(s => `<span class="skill-chip">${s.name}</span>`).join('')}
       </div>
     </div>
   `).join('');
@@ -229,6 +228,7 @@ function renderProjects() {
         <div class="project-top">
           <h3 class="project-title">${p.title}</h3>
           <div class="project-links">
+            ${p.metric ? `<span class="metric-chip">${p.metric}</span>` : ''}
             ${p.github ? `<a href="${p.github}" target="_blank" rel="noopener" class="proj-link" title="GitHub"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg></a>` : ''}
             ${p.demo   ? `<a href="${p.demo}"   target="_blank" rel="noopener" class="proj-link" title="Live demo"><i data-lucide="external-link" width="16" height="16"></i></a>` : ''}
           </div>
@@ -317,7 +317,7 @@ function renderEducation() {
 
   const degreeHTML = education.map(e => `
     <div class="edu-card reveal">
-      <div class="edu-card-icon">🎓</div>
+      <div class="edu-card-icon"><i data-lucide="graduation-cap" width="20" height="20"></i></div>
       <div class="edu-card-body">
         <div class="edu-card-title">${e.degree}</div>
         <div class="edu-card-sub">${e.field}</div>
@@ -420,79 +420,6 @@ function initContactForm() {
   });
 }
 
-// ── Hero Canvas Particles ─────────────────────────────────────
-function initHeroCanvas() {
-  const canvas = document.getElementById('hero-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let W, H, dots = [];
-
-  const isDark = () => document.documentElement.dataset.theme === 'dark';
-
-  function resize() {
-    W = canvas.width  = canvas.offsetWidth;
-    H = canvas.height = canvas.offsetHeight;
-  }
-
-  function makeDot() {
-    return {
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 1.8 + 0.4,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.25,
-      o: Math.random() * 0.4 + 0.1,
-    };
-  }
-
-  function init() {
-    resize();
-    dots = Array.from({ length: 90 }, makeDot);
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    const base = isDark() ? '37,99,235' : '20,71,230';
-    dots.forEach(d => {
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${base},${d.o})`;
-      ctx.fill();
-
-      d.x += d.vx; d.y += d.vy;
-      if (d.x < 0) d.x = W;
-      if (d.x > W) d.x = 0;
-      if (d.y < 0) d.y = H;
-      if (d.y > H) d.y = 0;
-    });
-
-    // draw faint connection lines between nearby dots
-    for (let i = 0; i < dots.length; i++) {
-      for (let j = i + 1; j < dots.length; j++) {
-        const dx = dots[i].x - dots[j].x;
-        const dy = dots[i].y - dots[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < 100) {
-          ctx.beginPath();
-          ctx.moveTo(dots[i].x, dots[i].y);
-          ctx.lineTo(dots[j].x, dots[j].y);
-          ctx.strokeStyle = `rgba(${base},${0.06 * (1 - dist/100)})`;
-          ctx.lineWidth = 0.6;
-          ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(draw);
-  }
-
-  init();
-  draw();
-  window.addEventListener('resize', () => { resize(); });
-
-  // re-draw when theme toggles
-  document.getElementById('theme-toggle')?.addEventListener('click', () => setTimeout(draw, 50));
-}
-
 // ── Custom cursor ──────────────────────────────────────────────
 function initCustomCursor() {
   // Only on pointer devices
@@ -553,17 +480,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Init all interactions
   initTheme();
-  initHeroCanvas();
   initNav();
   initActiveNav();
-  initTyping();
-  initTaglineCycle();
+  initProgressBar();
+  initMagnetic();
   initContactForm();
   initCustomCursor();
 
   // Observers (slight delay to let paint settle)
   requestAnimationFrame(() => requestAnimationFrame(() => {
     initReveal();
-    initSkillBars();
+    initCountUps();
   }));
 });
